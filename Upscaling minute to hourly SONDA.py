@@ -9,7 +9,7 @@ Created on Sun Dec 17 16:15:26 2023
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import trapz
+#from scipy.integrate import trapz
 
 
 # ========================================================================
@@ -20,14 +20,14 @@ from scipy.integrate import trapz
 #df_original = pd.read_csv("C:/Users/isaac/OneDrive/Área de Trabalho/SONDA - Petrolina/2015/PTR1505ED.csv",sep=";")
 
 # Pessoal
-df_original = pd.read_csv("C:/Users/isaac/Desktop/Mestrado/Dados SONDA/Sonda/2012/PTR1204ED.csv",sep=";")
+df_original = pd.read_csv("C:/Users/isaac/Desktop/Mestrado/Dados SONDA/Sonda/2015/PTR1505ED.csv",sep=";")
 
 # Headers >= 3.3
-#columns = ["id","year","day","min","glo_avg","dir_avg","diff_avg","lw_avg","par_avg","lux_avg","tp_sfc","humid","press","rain","ws_10m","wd_10m"]
+columns = ["id","year","day","min","glo_avg","dir_avg","diff_avg","lw_avg","par_avg","lux_avg","tp_sfc","humid","press","rain","ws_10m","wd_10m"]
 
 # Headers < 3.3
-columns = ["id","year","day","min","glo_avg","dir_avg","diff_avg","lw_avg","par_avg","lux_avg","tp_sfc","humid","press","rain","ws_10m","wd_10m"]
-df_original = df_original.drop(df_original.columns[3], axis = 1 ) # For years <= 2015, enable this command line
+#columns = ["id","year","day","min","glo_avg","dir_avg","diff_avg","lw_avg","par_avg","lux_avg","tp_sfc","humid","press","rain","ws_10m","wd_10m"]
+#df_original = df_original.drop(df_original.columns[3], axis = 1 ) # For years <= 2015, enable this command line
 
 
 df_original.columns = columns
@@ -39,7 +39,7 @@ df = df_original.copy()
 # ========================================================================
 
 
-# =============== Ajusdment in the negative values
+# =============== Adjustment in the negative values
 
 df["glo_avg"] = df["glo_avg"].apply(lambda x: max(0, x))
 df["par_avg"] = df["par_avg"].apply(lambda x: max(0, x))
@@ -152,14 +152,14 @@ df_final_daily.loc[df_final_daily['day'].isin(days_with_rain), 'rain'] = 1 #assi
 #df_final_daily .to_csv("C:/Users/isaac/OneDrive/Área de Trabalho/SONDA - Petrolina/2015/May_daily.csv")
 
 # Pessoal
-df_final_hourly.to_csv("C:/Users/isaac/Desktop/Data Science/Sonda/2012/April_hourly.csv")
-df_final_daily.to_csv("C:/Users/isaac/Desktop/Data Science/Sonda/2012/April_daily.csv")
+#df_final_hourly.to_csv("C:/Users/isaac/Desktop/Data Science/Sonda/2012/April_hourly.csv")
+#df_final_daily.to_csv("C:/Users/isaac/Desktop/Data Science/Sonda/2012/April_daily.csv")
 
 
 # ========================================================================
 # ====================== Ploting Charts ==================================
 # ========================================================================
-'''
+
 count = 0
 
 # ========= Hourly irradiance chart
@@ -170,7 +170,7 @@ while count < df_final_hourly.shape[0]:
     y = df_final_hourly["glo_avg"][count: count + 24]
     
     plt.plot(x,y)
-    area = trapz(y, x)
+   # area = trapz(y, x)
     
  #   print("Area Dia ",str(df_final_hourly["day"][count + 23]),":", round(area,2))
     
@@ -184,8 +184,20 @@ plt.show()
 
 plt.plot(df_final_daily["day"],df_final_daily["glo_avg"])
 
-plt.title("Daily Chart Irradiance")
+plt.title("Total Daily Hourly Irradiance - May/2015")
+plt.xlabel("Day of Year")
+plt.ylabel("Global Average Radiation (Whm-2)")
 plt.ylim([0, 8000])
+plt.show()
+
+# ======== Daily chart rain scatter plot
+
+plt.scatter(df_final_daily["day"],df_final_daily["rain"])
+
+plt.title("Days With Rain Between 9:00 and 20:00 - May/2015")
+plt.xlabel("Day of Year")
+plt.ylabel("Rain Flag")
+plt.ylim([0, 2])
 plt.show()
 
 
@@ -210,10 +222,13 @@ plt.show()
 
 count = 0
 
+df_original_min = df_original["glo_avg"].apply(lambda x: min(0, x))
+
+
 while count < (df_original.shape[0]): # - 
     
-    x = df_original["min"][count: count + 1540]
-    y = df_original["glo_avg"][count: count + 1540]
+    x = df_original["min"][count: count + 1440]
+    y = df_original_min[count: count + 1440]
    
       
     plt.plot(x,y)
@@ -225,4 +240,3 @@ plt.ylim([-10, 10])
 plt.xlabel("Day Minute")
 plt.ylabel("Global Average Radiation (Wm-2)")
 plt.show()
-'''
